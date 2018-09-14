@@ -8,7 +8,7 @@ RUN echo 'http://mirrors.aliyun.com/alpine/v3.7/community/'>/etc/apk/repositorie
     rm -rf /tmp/*
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache openssh git curl nginx freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
+    apk add --no-cache bash ansible openssh git curl nginx freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
     docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-png-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && \
     docker-php-ext-install pdo_mysql && \
@@ -18,23 +18,28 @@ RUN apk update && apk upgrade && \
     docker-php-ext-install -j${NPROC} gd && \
     apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
-RUN mkdir -p /opt/data/www/walle-web && \
+RUN sed -i -e 's/# Host/Host/' -e 's/#\s*StrictHostKeyChecking.*/StrictHostKeyChecking no/' /etc/ssh/ssh_config && \
+    mkdir -p /var/log/nginx/ && mkdir -p /run/nginx && \
+    mkdir -p /opt/data/www/walle-web && \
     cd /opt/data/www/walle-web     && \
     git clone https://github.com/meolu/walle-web.git . && \
-    mkdir -p /usr/local/bin
-
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer
+    mkdir -p /usr/local/bin && \
+    curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
 
 RUN cd /opt/data/www/walle-web && \
     composer install --prefer-dist --no-dev --optimize-autoloader -vvvv && \
-    chown -R www-data.www-data /opt && \
-    cp -r vendor/bower-asset vendor/bower
+    mkdir -p /opt/data/www/walle-web/runtime/ansible_hosts && \
+    mkdir -p /data/resource && \
+    chown -R www-data.www-data /data /opt && \
+    cp -r vendor/bower-asset vendor/bower && \
+    su www-data -s /bin/sh -c 'ssh-keygen -q -N "" -f /home/www-data/.ssh/id_rsa'
+
+#GlobalHelper bug cant cover utf-8 to utf-8//ingore
+RUN sed -i -e '80s/text/out/' -e '81s/}/}else{/' -e '82s/$out/    $out/' -e '83s/^/        }/' \
+    /opt/data/www/walle-web/components/GlobalHelper.php
 
 COPY ./config /opt/data/www/walle-web/config
-
-RUN mkdir -p /var/log/nginx/ && mkdir -p /run/nginx
-
 COPY ./walle.conf /etc/nginx/conf.d/walle.conf
 
 # volume mappings
