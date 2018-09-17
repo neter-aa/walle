@@ -36,7 +36,7 @@ RUN cd /opt/data/www/walle-web && \
     su www-data -s /bin/sh -c 'ssh-keygen -q -N "" -f /home/www-data/.ssh/id_rsa'
 
 #GlobalHelper bug cant cover utf-8 to utf-8//ingore
-RUN sed -i -e '80s/text/out/' -e '81s/}/}else{/' -e '82s/$out/    $out/' -e '83s/^/        }/' \
+RUN sed -i -e 's/\/\/IGNORE//' \
     /opt/data/www/walle-web/components/GlobalHelper.php
 
 COPY ./config /opt/data/www/walle-web/config

@@ -30,3 +30,9 @@ cd /opt/data/www/walle-web
 ```
 docker exec walle cat /home/www-data/.ssh/id_rsa.pub
 ```
+
+log dirs
+```
+/tmp/walle/
+/opt/data/www/walle-web/runtime/logs/
+```
