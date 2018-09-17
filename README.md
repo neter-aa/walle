@@ -2,9 +2,9 @@
 
 walle+nginx
 
-镜像大小：325MB
-官网：https://github.com/meolu/walle-web
-使用php:7.1.21-fpm-alpine作为基础镜像,添加了nginx。
+镜像大小：325MB  
+官网：https://github.com/meolu/walle-web  
+使用php:7.1.21-fpm-alpine作为基础镜像,添加了nginx。  
 
 dockerfile 包含bash ansible nginx ssh git php-fpm
 
