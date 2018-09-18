@@ -8,7 +8,7 @@ RUN echo 'http://mirrors.aliyun.com/alpine/v3.7/community/'>/etc/apk/repositorie
     rm -rf /tmp/*
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash ansible openssh git curl nginx freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
+    apk add --no-cache nodejs bash ansible openssh git curl nginx freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
     docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-png-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && \
     docker-php-ext-install pdo_mysql && \
